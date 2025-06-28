@@ -1,286 +1,292 @@
-// Page Navigation
-function showPage(pageId) {
-    // Hide all pages
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(page => page.classList.remove('active'));
-    
-    // Show selected page
-    document.getElementById(pageId).classList.add('active');
-    
-    // Update navigation
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => link.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // Scroll to top
-    window.scrollTo(0, 0);
+// Mobile Navigation Toggle
+const hamburger = document.querySelector(".hamburger")
+const navMenu = document.querySelector(".nav-menu")
+
+hamburger.addEventListener("click", () => {
+  hamburger.classList.toggle("active")
+  navMenu.classList.toggle("active")
+})
+
+// Close mobile menu when clicking on a link
+document.querySelectorAll(".nav-link").forEach((n) =>
+  n.addEventListener("click", () => {
+    hamburger.classList.remove("active")
+    navMenu.classList.remove("active")
+  }),
+)
+
+// Smooth scrolling for navigation links
+function scrollToSection(sectionId) {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  }
 }
 
-// Copy Discord Username
-function copyDiscord() {
-    const username = '@playdev.';
-    navigator.clipboard.writeText(username).then(() => {
-        const copyBtn = document.querySelector('.copy-btn');
-        const originalHTML = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-        copyBtn.style.background = '#28a745';
-        
-        setTimeout(() => {
-            copyBtn.innerHTML = originalHTML;
-            copyBtn.style.background = '';
-        }, 2000);
-    });
+// Add click event listeners to navigation links
+document.querySelectorAll(".nav-link").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault()
+    const targetId = link.getAttribute("href").substring(1)
+    scrollToSection(targetId)
+  })
+})
+
+// Intersection Observer for animations
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: "0px 0px -50px 0px",
 }
 
-// Terms and Conditions
-let termsRead = false;
-let termsAgreed = false;
-
-function showTerms() {
-    document.getElementById('termsModal').style.display = 'block';
-    termsRead = true;
-    updateAgreementStatus();
-}
-
-function closeTerms() {
-    document.getElementById('termsModal').style.display = 'none';
-}
-
-function acceptTerms() {
-    termsAgreed = true;
-    closeTerms();
-    updateAgreementStatus();
-}
-
-function agreeTerms() {
-    if (termsRead && termsAgreed) {
-        const statusElement = document.getElementById('agreementStatus');
-        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Terms accepted! You can now proceed with hiring.';
-        statusElement.classList.add('agreed');
-        
-        // Show success message
-        showNotification('Terms accepted! Feel free to contact me on Discord to get started.', 'success');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("animate")
     }
-}
+  })
+}, observerOptions)
 
-function updateAgreementStatus() {
-    const agreeBtn = document.getElementById('agreeBtn');
-    const statusElement = document.getElementById('agreementStatus');
-    
-    if (termsRead && termsAgreed) {
-        agreeBtn.disabled = false;
-        statusElement.innerHTML = '<i class="fas fa-info-circle"></i> Click "I Agree" to confirm your acceptance';
-    } else if (termsRead) {
-        agreeBtn.disabled = false;
-        statusElement.innerHTML = '<i class="fas fa-info-circle"></i> Please accept the terms in the modal to proceed';
-    }
-}
+// Observe elements for animation
+document.addEventListener("DOMContentLoaded", () => {
+  // Section headers
+  document.querySelectorAll(".section-title").forEach((el) => observer.observe(el))
+  document.querySelectorAll(".section-line").forEach((el) => observer.observe(el))
+  document.querySelectorAll(".section-subtitle").forEach((el) => observer.observe(el))
 
-// Notification System
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(notification => notification.remove());
-    
-    // Create notification
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
-        </div>
-        <button onclick="this.parentElement.remove()" class="notification-close">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: ${type === 'success' ? 'rgba(40, 167, 69, 0.9)' : 'rgba(255, 215, 0, 0.9)'};
-        color: ${type === 'success' ? 'white' : 'black'};
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        z-index: 3000;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        max-width: 400px;
-        backdrop-filter: blur(10px);
-        border: 1px solid ${type === 'success' ? 'rgba(40, 167, 69, 0.3)' : 'rgba(255, 215, 0, 0.3)'};
-        animation: slideIn 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Auto remove after 5 seconds
+  // Feature items
+  document.querySelectorAll(".feature-item").forEach((el, index) => {
+    el.style.animationDelay = `${index * 0.2}s`
+    observer.observe(el)
+  })
+
+  // Service cards
+  document.querySelectorAll(".service-card").forEach((el, index) => {
+    el.style.animationDelay = `${index * 0.2}s`
+    observer.observe(el)
+  })
+
+  // Portfolio items
+  document.querySelectorAll(".portfolio-item").forEach((el, index) => {
+    el.style.animationDelay = `${index * 0.3}s`
+    observer.observe(el)
+  })
+
+  // Testimonial cards
+  document.querySelectorAll(".testimonial-card").forEach((el, index) => {
+    el.style.animationDelay = `${index * 0.3}s`
+    observer.observe(el)
+  })
+})
+
+// Navbar background change on scroll
+window.addEventListener("scroll", () => {
+  const navbar = document.querySelector(".navbar")
+  if (window.scrollY > 50) {
+    navbar.style.background = "rgba(0, 0, 0, 0.98)"
+  } else {
+    navbar.style.background = "rgba(0, 0, 0, 0.95)"
+  }
+})
+
+// Contact form handling
+document.getElementById("contactForm").addEventListener("submit", (e) => {
+  e.preventDefault()
+
+  // Get form data
+  const formData = new FormData(e.target)
+  const data = Object.fromEntries(formData)
+
+  // Simulate form submission
+  const submitButton = e.target.querySelector(".submit-button")
+  const originalText = submitButton.innerHTML
+
+  submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'
+  submitButton.disabled = true
+
+  setTimeout(() => {
+    submitButton.innerHTML = '<i class="fas fa-check"></i> Message Sent!'
+    submitButton.style.background = "#28a745"
+
     setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }
-    }, 5000);
-}
-
-// Add CSS animations for notifications
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-    
-    .notification-content {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex: 1;
-    }
-    
-    .notification-close {
-        background: none;
-        border: none;
-        color: inherit;
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 3px;
-        transition: background 0.3s ease;
-    }
-    
-    .notification-close:hover {
-        background: rgba(0, 0, 0, 0.1);
-    }
-`;
-document.head.appendChild(style);
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('termsModal');
-    if (event.target === modal) {
-        closeTerms();
-    }
-}
-
-// Mobile menu toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            hamburger.classList.toggle('active');
-        });
-    }
-    
-    // Add mobile menu styles
-    const mobileStyle = document.createElement('style');
-    mobileStyle.textContent = `
-        @media (max-width: 768px) {
-            .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 70px;
-                flex-direction: column;
-                background-color: rgba(26, 26, 26, 0.98);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                backdrop-filter: blur(10px);
-                border-top: 1px solid rgba(255, 215, 0, 0.2);
-            }
-            
-            .nav-menu.active {
-                left: 0;
-            }
-            
-            .nav-menu li {
-                margin: 1rem 0;
-            }
-            
-            .hamburger.active span:nth-child(2) {
-                opacity: 0;
-            }
-            
-            .hamburger.active span:nth-child(1) {
-                transform: translateY(8px) rotate(45deg);
-            }
-            
-            .hamburger.active span:nth-child(3) {
-                transform: translateY(-8px) rotate(-45deg);
-            }
-        }
-    `;
-    document.head.appendChild(mobileStyle);
-});
-
-// Smooth scrolling for better UX
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Add loading animation
-window.addEventListener('load', function() {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-    
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-});
+      submitButton.innerHTML = originalText
+      submitButton.style.background = ""
+      submitButton.disabled = false
+      e.target.reset()
+    }, 2000)
+  }, 1500)
+})
 
 // Parallax effect for hero section
-window.addEventListener('scroll', function() {
-    const scrolled = window.pageYOffset;
-    const parallax = document.querySelector('.floating-card');
-    
-    if (parallax) {
-        const speed = scrolled * 0.5;
-        parallax.style.transform = `perspective(1000px) rotateY(-15deg) rotateX(10deg) translateY(${speed}px)`;
-    }
-});
+window.addEventListener("scroll", () => {
+  const scrolled = window.pageYOffset
+  const parallax = document.querySelector(".floating-particles")
+  if (parallax) {
+    const speed = scrolled * 0.5
+    parallax.style.transform = `translateY(${speed}px)`
+  }
+})
 
-// Add hover effects for cards
-document.addEventListener('DOMContentLoaded', function() {
-    const cards = document.querySelectorAll('.feature-card, .portfolio-card, .pricing-card');
-    
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'perspective(1000px) rotateX(0deg) translateY(-10px) scale(1.02)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'perspective(1000px) rotateX(5deg) translateY(0px) scale(1)';
-        });
-    });
-});
+// Add typing effect to hero title
+function typeWriter(element, text, speed = 100) {
+  let i = 0
+  element.innerHTML = ""
+
+  function type() {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i)
+      i++
+      setTimeout(type, speed)
+    }
+  }
+
+  type()
+}
+
+// Counter animation for stats
+function animateCounter(element, target, duration = 2000) {
+  let start = 0
+  const increment = target / (duration / 16)
+
+  function updateCounter() {
+    start += increment
+    if (start < target) {
+      element.textContent = Math.floor(start) + "+"
+      requestAnimationFrame(updateCounter)
+    } else {
+      element.textContent = target + "+"
+    }
+  }
+
+  updateCounter()
+}
+
+// Initialize counter animations when stats come into view
+const statsObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const statNumbers = entry.target.querySelectorAll(".stat-number")
+        statNumbers.forEach((stat) => {
+          const text = stat.textContent
+          const number = Number.parseInt(text.replace(/\D/g, ""))
+          if (number && !stat.classList.contains("animated")) {
+            stat.classList.add("animated")
+            animateCounter(stat, number)
+          }
+        })
+      }
+    })
+  },
+  { threshold: 0.5 },
+)
+
+document.addEventListener("DOMContentLoaded", () => {
+  const heroStats = document.querySelector(".hero-stats")
+  if (heroStats) {
+    statsObserver.observe(heroStats)
+  }
+})
+
+// Add smooth reveal animation for text content
+function revealText(element, delay = 0) {
+  const text = element.textContent
+  const words = text.split(" ")
+  element.innerHTML = ""
+
+  words.forEach((word, index) => {
+    const span = document.createElement("span")
+    span.textContent = word + " "
+    span.style.opacity = "0"
+    span.style.transform = "translateY(20px)"
+    span.style.display = "inline-block"
+    span.style.transition = "all 0.6s ease"
+    span.style.transitionDelay = `${delay + index * 0.1}s`
+    element.appendChild(span)
+
+    setTimeout(() => {
+      span.style.opacity = "1"
+      span.style.transform = "translateY(0)"
+    }, 100)
+  })
+}
+
+// Initialize text reveal animations
+document.addEventListener("DOMContentLoaded", () => {
+  const textElements = document.querySelectorAll(".hero-description, .about-text p")
+  textElements.forEach((el, index) => {
+    observer.observe(el)
+    el.addEventListener("animationstart", () => {
+      revealText(el, index * 0.2)
+    })
+  })
+})
+
+// Add particle cursor effect
+document.addEventListener("mousemove", (e) => {
+  const cursor = document.createElement("div")
+  cursor.className = "cursor-particle"
+  cursor.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        width: 4px;
+        height: 4px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.7;
+        animation: cursorFade 1s ease-out forwards;
+    `
+
+  document.body.appendChild(cursor)
+
+  setTimeout(() => {
+    cursor.remove()
+  }, 1000)
+})
+
+// Add cursor fade animation
+const style = document.createElement("style")
+style.textContent = `
+    @keyframes cursorFade {
+        0% {
+            transform: scale(1);
+            opacity: 0.7;
+        }
+        100% {
+            transform: scale(0);
+            opacity: 0;
+        }
+    }
+`
+document.head.appendChild(style)
+
+// Add loading animation
+window.addEventListener("load", () => {
+  document.body.classList.add("loaded")
+})
+
+// Add scroll progress indicator
+const scrollProgress = document.createElement("div")
+scrollProgress.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: var(--gradient-primary);
+    z-index: 9999;
+    transition: width 0.1s ease;
+`
+document.body.appendChild(scrollProgress)
+
+window.addEventListener("scroll", () => {
+  const scrollTop = window.pageYOffset
+  const docHeight = document.body.offsetHeight - window.innerHeight
+  const scrollPercent = (scrollTop / docHeight) * 100
+  scrollProgress.style.width = scrollPercent + "%"
+})
